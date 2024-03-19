@@ -20,7 +20,7 @@ The presence of antibiotics in waterways is a growing concern due to their poten
 16S, metagenomics, antimicrobial resistance genes, aquaculture, microbiomes, antibiotics, carp (*Cyprinus carpio*)
 
 ### Summary
-Dosage of environmentally relevant concentrations of antibiotics on Eurasion carp (*Cyprinus carpio*) reveals signifcant shift in skin micriobiome community compostion
+Dosage of environmentally relevant concentrations of antibiotics on Eurasian carp (*Cyprinus carpio*) reveals a significant shift in skin microbiome community composition.
 
 ![Overall experimental design schematic](Antibiotics_expt.jpg?raw=true)
 Created with [BioRender.com](https://www.biorender.com/)
