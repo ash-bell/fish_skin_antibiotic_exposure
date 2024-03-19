@@ -2,7 +2,7 @@
 
 Ashley G. Bell<sup>a,b*</sup>, Jo Cable<sup>c</sup>, Ben Temperton<sup>a</sup>, Charles R. Tyler<sup>a,b*</sup>
 
-<sup>a</sup> College of Life and Environmental Sciences, The University of Exeter, Exter, Devon EX4 4QD, United Kingdom
+<sup>a</sup> Faculty of Health and Life Sciences, The University of Exeter, Exter, Devon EX4 4QD, United Kingdom
 
 <sup>b</sup> Sustainable Aquaculture Futures, The University of Exeter, Exter, Devon EX4 4QD, United Kingdom
 
