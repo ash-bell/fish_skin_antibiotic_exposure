@@ -22,5 +22,5 @@ The presence of antibiotics in waterways is a growing concern due to their poten
 ### Summary
 Dosage of environmentally relevant concentrations of antibiotics on Eurasion carp (*Cyprinus carpio*) reveals signifcant shift in skin micriobiome community compostion
 
-![Graphical abstract](Graphical_abstract.jpg?raw=true)
+![Overall experimental design schematic](Antibiotics_expt.jpg?raw=true)
 Created with [BioRender.com](https://www.biorender.com/)
