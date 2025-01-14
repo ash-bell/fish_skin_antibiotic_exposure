@@ -1,23 +1,25 @@
 # Impacts of environmentally relevant concentrations of antibiotic cocktails on the skin microbiome of Eurasian carp (*Cyprinus carpio*)
 
-Ashley G. Bell<sup>a,b*</sup>, Jo Cable<sup>c</sup>, Ben Temperton<sup>a</sup>, Charles R. Tyler<sup>a,b*</sup>
+Ashley G. Bell<sup>1,2</sup>, Emma R Vaughan<sup>3</sup>, Barbara Kasprzyk-Hordern<sup>3</sup>, Jo Cable<sup>4</sup>, Ben Temperton<sup>1</sup>, Charles R. Tyler<sup>1,2*</sup>
 
-<sup>a</sup> Faculty of Health and Life Sciences, The University of Exeter, Exter, Devon EX4 4QD, United Kingdom
+<sup>1</sup> Biosciences, Faculty of Health and Life Sciences, University of Exeter, Exeter, Devon, EX4 4QD, UK
 
-<sup>b</sup> Sustainable Aquaculture Futures, The University of Exeter, Exter, Devon EX4 4QD, United Kingdom
+<sup>2</sup> Sustainable Aquaculture Futures, University of Exeter, Exeter, Devon, EX4 4QD, UK
 
-<sup>c</sup> School of Biosciences, Cardiff University, Cardiff CF10 3AX, United Kingdom
+<sup>3</sup>Department of Chemistry, University of Bath, Bath, Claverton Down, BA2 7AY, UK
 
-<sup>*</sup> Corresponding authors
+<sup>4</sup> School of Biosciences, Cardiff University, Cardiff, CF10 3AX, UK
 
-## PhD thesis (Chapter 6)
-Link TBC
+<sup>*</sup> Corresponding Author
+
+## Paper link
+Paper in review
 
 ## Abstract
-The presence of antibiotics in waterways is a growing concern due to their potential to disrupt the balance of aquatic microbial ecosystems. Fish, a vital component of these ecosystems and aquaculture harbour diverse microbiomes on both their gut and skin surfaces. These microbiomes play a critical role in host health, nutrient absorption, immune priming, and protection from pathogens. While research has extensively explored the impacts of environmental antibiotics on fish gut microbiomes, the effects on skin microbiomes remain largely unknown. This study investigated the response of the Eurasian carp (*Cyprinus carpio*) skin microbiome to environmentally relevant concentrations of antibiotics. Carp were exposed to antibiotic cocktails mimicking effluent levels (low dose) and a worst-case scenario (high dose) for two weeks, followed by a two-week depuration period. 16S amplicon sequencing revealed a disruption in bacterial community composition following exposure, with limited recovery during depuration. Alpha diversity remained unchanged, but beta diversity metrics indicated significant bacterial community compositional shifts. Antibiotics resulted in the enrichment of the genus *Arcicella* (Proteobacteria) and depletion of *Sphaerotilus* (Bacteroidetes) and were identified as potential bioindicators of antibiotic stress. Tank water microbiomes closely resembled those of the low-dose exposure group, suggesting similar and potentially predictable responses to antibiotics. No significant increase in antibiotic resistance genes (ARGs) was detected, potentially due to the short exposure time, concentration or low initial ARG abundance and diversity. This study highlights the potential for even low-level antibiotic exposure to disrupt fish skin microbiomes, necessitating further investigation into long-term effects, the functional capacity of altered microbiomes, and the role of the tank environment in microbiome recovery. Understanding the effect of antibiotics on fish skin microbiomes and their resilience to stressors will help inform strategies to improve fish health in aquaculture and protect wild fish populations.
+The skin surfaces of fish harbour diverse assemblages of microbes (microbiomes) that play critical roles in host health and disruption of these microbiomes can lead to disease conditions. Antibiotics, widely used in medicine for human and animal health treatments, are increasingly present in waterways - a growing concern due to their potential to disrupt the balance of microbial ecosystems and drive antimicrobial resistance (AMR). The effects of antibiotics on skin microbiomes in fish, however, have been little explored. Here, we show that a 2-week exposure of Eurasian carp (*Cyprinus carpio*) to cocktails of five antibiotics (ciprofloxacin, clarithromycin, sulfamethoxazole, trimethoprim, and tetracycline) at levels found in the environment resulted in significant skin bacterial community compositional shifts. Applying 16S rRNA amplicon sequencing, we found enrichment of the genus *Arcicella* (Proteobacteria) and depletion of *Sphaerotilus* (Bacteroidetes) with limited recovery even after maintaining the fish for a further two weeks in clean (antibiotic-free) water. In the low-antibiotic concentration exposure group, the tank water microbiome assemblages resembled those of the fish skin suggesting similar responses to the antibiotic treatments. Metagenomic analysis observed no increase in antibiotic resistance genes or changes in metabolic pathway abundance, possibly due to the relatively short duration of antibiotic exposure. This study highlights that even low-level exposure to chemical mixtures can disrupt fish skin microbiome compositions warranting further assessments for long-term effects and functional consequences of these altered microbiomes on fish health.
 
 ### Keywords
-16S, metagenomics, antimicrobial resistance genes, aquaculture, microbiomes, antibiotics, carp (*Cyprinus carpio*)
+fish skin, microbiomes, antimicrobial resistance genes, 16S, metagenomics, metabolic pathway disruption, aquaculture, antibiotics, carp (*Cyprinus carpio*)
 
 ### Summary
 Dosage of environmentally relevant concentrations of antibiotics on Eurasian carp (*Cyprinus carpio*) reveals a significant shift in skin microbiome community composition.
