@@ -115,7 +115,7 @@ rootedTree = ape::root(phy_tree(ps), outgroup=new.outgroup, resolve.root=TRUE)
 phy_tree(ps) <- phy_tree(rootedTree)
 ```
 
-# Supplementary Figure 1
+# Supplementary Figure 3
 ## Positive controls
 ### What do my positive controls look like?
  ZymoBIOMICS Microbial Community Standard (Zymo; D6300) (contains cells) in all Postive samples.
@@ -254,7 +254,7 @@ saveRDS(ps, "data/pruned_pyloseq.rds")
 # Samples are clean, we can start analysis
 
 
-# Supplementary Figure 2
+# Supplementary Figure 4
 ## Antibiotics dosages
 ```{r}
 #####
@@ -318,82 +318,6 @@ AB.filt %>%
   filter(Days.post.exposure.start %in% c(7))
 ```
 
-# Supplementary Figure 3
-## Tank water Physchem
-```{r}
-# What is distribution of water chemistry between tanks
-tank <- read_csv("data/tank.water.information.csv", col_types = c("icfidddddddddddfc"), col_select = -SN) %>%
-  filter(Date != "01/06/2023") %>%
-  mutate(Date = as.Date(Date, format = "%d/%m/%Y")) %>%
-  rowwise() %>%
-  mutate(Avg.temp.C = mean(c_across(c(starts_with("Temp.C."))), na.rm = T))
-
-tanks.filt <- tank %>%
-  select(-Days.post.exposure.start, -Temp.C.pH.meter, -Temp.C.cond.meter,
-         -Temp.C.dO2.meter, -Person.responsible, -Notes)
-
-(dist.water.chem.p <- tanks.filt %>%
-  pivot_longer(-c("Date", "Tank"), names_to = "metric", values_to = "value") %>%
-  ggplot(aes(x = Date, y = value, colour = Tank)) +
-  geom_point(size = 2) +
-  geom_line(linewidth = 1) +
-  theme_bw() +
-  scale_colour_manual(values = clrs.tanks) +
-  facet_wrap(~metric, scales = "free_y"))
-
-tanks.filt %>%
-  tibble() %>%
-  select(-Date) %>%
-  summarise(across(where(is.double), list(sd = sd))) %>%
-  pivot_longer(cols = everything())
-```
-
-# Supplementary Figure 4
-## Carp growth rates
-```{r}
-carp <- read_csv("data/Carp_PIT.tag_weight_length_tank.no.UPDATED.csv") %>%
-  unite(tank, treatment, replicate, remove = F, sep = "") %>%
-  mutate(treatment = factor(treatment, levels = c("Control", "Low", "High")))
-
-weight.carp <- carp %>%
-  ggplot(aes(x = date, y = weight.g,
-    group = PIT.tag.num, colour = treatment)) +
-    geom_point(size = 1) +
-    geom_line() +
-    facet_wrap(~ treatment, ncol = 3) +
-  scale_fill_manual(values = clrs.tanks, aesthetics = c("fill", "colour")) +
-  theme_bw()
-
-length.carp <- carp %>%
-  ggplot(aes(x = date, y = fork.length.cm,
-    group = PIT.tag.num, colour = treatment)) +
-    geom_point(size = 1) +
-    geom_line() +
-    facet_wrap(~ treatment, ncol = 3) +
-  scale_fill_manual(values = clrs.tanks, aesthetics = c("fill", "colour")) +
-  theme_bw()
-
-length.carp + weight.carp +
-  patchwork::plot_annotation(tag_levels = 'A') +
-  plot_layout(guides = "collect")
-
-LW3 <- carp %>%
-  group_by(PIT.tag.num) %>%
-  mutate(daily.length.gain.cm = diff(fork.length.cm)/as.numeric(diff(date)),
-         daily.weight.gain.g = diff(weight.g)/as.numeric(diff(date)))
-
-weight.lmer <- lmerTest::lmer(weight.g ~ treatment + (1 + treatment | treatment / tank), data = carp) %>%
-  broom.mixed::tidy()
-
-length.lmer <- lmerTest::lmer(fork.length.cm ~ treatment + (1 + treatment | treatment / tank), data = carp) %>%
-  broom.mixed::tidy()
-
-LW3 %>%
-  group_by(treatment) %>%
-  select(-c(date, PIT.tag.num, replicate, tank)) %>%
-  summarise(across(where(is.double), list(mean = mean, sd = sd)))
-```
-
 # Create Rarified ASV tables
 ```{r}
 ### This method rarefaction the OTU table. But looking at Pat Schloss's work, he rarefies then calculates a diversity metric from that
@@ -455,7 +379,7 @@ LW3 %>%
 # write_csv(rarefaction, file = "data/rarefaction.csv")
 ```
 
-# Figure 4 
+# Figure 2 and Supplementary table 3
 ## Alpha diversity
 ```{r}
 ps <- readRDS("data/pruned_pyloseq.rds")
@@ -654,7 +578,7 @@ stats.table %>%
 # no measures significant
 ```
 
-# Figure 5
+# Figure 3 and Supplementary table 4 and 5
 ## Beta Diversity
 ```{r}
 ps <- readRDS("data/pruned_pyloseq.rds")
@@ -843,7 +767,7 @@ bind_rows(UF5, UF, BC, Jacc, rclr) %>%
   labs(color="Dissimilarity Matrix")
 ```
 
-# Figure 7-10, Figure 6 below this block
+# Supplementary Figure 6 and 7, Supplementary table 7
 ## Differential abundance
 ```{r}
 # What taxa are enriched
@@ -1147,7 +1071,7 @@ ggsave(plot = tax.trees.filt.high,
        width = 30, height = 20, units = "cm")
 ```
 
-# Figure 6
+# Figure 4
 ## Alluvial plot most diff abund taxa
 ```{r}
 comp <- c("-2_7", "7_14", "14_21", "21_28")
@@ -1199,141 +1123,9 @@ bind_rows(filt.swab, filt.filt) %>%
   write_csv("data/diff.abund.taxa.csv")
 ```
 
-# Table 6, Figure 11
-# How different are individual carp microbiomes
+# Supplementary Figure 5
+# Supplementary table 6
 ```{r}
-# How different are the same samples over time
-ps <- readRDS("data/combined_ASV_PS.rds")
-metadata <- samdat_tbl(ps) %>%
-  rename(Sample = .sample_name)
-  
-clrs.fish <- clrs.tanks[levels(metadata$tank)] %>%
-  data.frame() %>%
-  rownames_to_column(var = "tank") %>%
-  rename(colour = ".")
-
-fish.filt <- metadata %>%
-  distinct(tank, PIT.tag.num) %>%
-  filter(!is.na(PIT.tag.num)) %>%
-  left_join(clrs.fish, by = "tank")
-
-clrs.fish <- setNames(fish.filt$colour, fish.filt$PIT.tag.num)
-
-clrs <- c(clrs.tanks, clrs.fish)
-
-df <- read_csv("data/alpha.diversity.mean.csv") %>%
-  left_join(metadata, by = "Sample") %>%
-  mutate(tank = as.factor(paste0(treatment, replicate))) %>%
-  pivot_longer(cols = c("Chao1", "Shannon", "PD"), names_to = "alpha.div.name", values_to = "alpha.div.value") %>%
-  mutate(tank = paste0(treatment, replicate)) %>%
-  filter(sample.type == "Filter") %>%
-  group_by(tank, Days.post.exposure.start, alpha.div.name) %>%
-  mutate(minimum = min(alpha.div.value),
-         maximum = max(alpha.div.value),
-         average = mean(alpha.div.value),
-         sd = sd(alpha.div.value)) %>%
-  ungroup()
-
-# Figure 11
-ggplot(df, aes(x = Days.post.exposure.start, y = alpha.div.value)) +
-  annotate("rect", xmin = 0, xmax = 14, ymin = -Inf, ymax = Inf, 
-           alpha=0.2, fill="black") +
-  #geom_ribbon(aes(ymin = minimum, ymax = maximum, fill = tank), alpha = 0.25) +
-  geom_ribbon(aes(ymin = average - sd, ymax = average + sd, fill = tank), alpha = 0.25) +
-  #geom_boxplot(aes(x = as.numeric(levels(Days.post.exposure.start)))) +
-  geom_line(aes(y = average, group = tank, colour = tank), linewidth = 2) +
-  geom_line(aes(group = PIT.tag.num, color = PIT.tag.num), alpha = 0.1, linewidth = 1) +
-  facet_wrap(alpha.div.name~treatment, scale = "free_y") +
-  scale_colour_manual(values = clrs, aesthetics = c("fill", "colour")) +
-  theme_bw() +
-  xlab("Days post exposure start") +
-  ylab("Alpha diversity") +
-  theme(legend.position = "none")
-
-alpha.div <- read_csv("data/alpha.diversity.mean.csv") %>%
-  left_join(metadata, by = "Sample") %>%
-  mutate(tank = as.factor(paste0(treatment, replicate))) 
-
-df <- alpha.div %>%
-  filter(sample.type == "Swab") %>%
-  rename(TP = Days.post.exposure.start) %>%
-  select(PIT.tag.num, Chao1, Shannon, PD, TP, treatment, tank) %>%
-  arrange(PIT.tag.num, TP) %>%
-  mutate(TP = factor(TP, levels = sort(unique(.$TP))))
-
-df %>%
-  group_by(PIT.tag.num) %>%
-  mutate(Chao1.diff = c(diff(Chao1), NA),
-         Shannon.diff = c(diff(Shannon), NA),
-         PD.diff = c(diff(PD), NA)) %>%
-  filter(!is.na(PD.diff)) %>%
-  lmerTest::lmer(PD.diff ~ treatment*TP + (1 + treatment|treatment/tank/PIT.tag.num), data = .) %>%
-  broom.mixed::tidy() %>%
-  filter(str_detect(term, ":")) %>%
-  mutate(`B.H. p adjusted` = p.adjust(p.value, method = "BH"),
-         `Differences between time points` = 
-           str_replace(term, ".*TP7", "7 to 14"),
-         `Differences between time points` = 
-           str_replace(`Differences between time points`, ".*TP14", "14 to 21"),
-         `Differences between time points` = 
-           str_replace(`Differences between time points`, ".*TP21", "21 to 28"),
-         term = str_replace(term, ".*High.*", "High"),
-         term = str_replace(term, ".*Low.*", "Low"),
-         `Alpha diversity metric` = "PD") %>%
-  rename(Treatment = term) %>%
-  select(`Alpha diversity metric`, Treatment, `Differences between time points`, estimate, std.error, statistic, df, `B.H. p adjusted`)
-
-df %>%
-  group_by(treatment, TP, tank) %>%
-  mutate(Chao1.trt.TP.tk.mean.diff = Chao1/mean(Chao1)) %>%
-  ungroup(tank) %>%
-  mutate(Chao1.trt.TP.mean.diff = Chao1/mean(Chao1)) %>%
-  ungroup(TP) %>%
-  mutate(Chao1.trt.mean.diff = Chao1/mean(Chao1)) %>%
-  view()
-```
-
-# Figure 12
-# Supplementary table 3
-```{r}
-ps <- readRDS("data/combined_ASV_PS.rds")
-
-metadata <- samdat_tbl(ps) %>%
-  select(.sample_name, tank, treatment, PIT.tag.num, Days.post.exposure.start)
-
-ps.swab <- ps %>%
-  ps_filter(sample.type == "Swab")
-
-ps.filt <- ps %>%
-  ps_filter(sample.type == "Filter")
-
-PCA.swab <- rda(otu_table(ps.swab), scale = F)
-PCA.filt <- rda(otu_table(ps.filt), scale = F)
-
-CAPTION <- paste0(nrow(samdat_tbl(ps.swab)), " samples & ", length(taxa_names(ps)), " taxa (unique). PCA , tax_transformation = None, dist = None")
-
-scores(PCA.swab)$sites %>%
-  data.frame() %>%
-  rownames_to_column(var = "Sample") %>%
-  left_join(metadata, by = join_by(Sample == .sample_name)) %>%
-  group_by(tank, Days.post.exposure.start) %>%
-  mutate(average = mean(PC1),
-         stdev = sd(PC1)) %>%
-  ungroup() %>%
-  arrange(Days.post.exposure.start, PIT.tag.num) %>%
-  ggplot(aes(x = PC1, y = PC2)) +
-  geom_path(aes(group = PIT.tag.num),  colour = "grey70", linewidth = 1) +
-  geom_point(aes(colour = as.factor(Days.post.exposure.start)), size = 3) +
-  theme_bw() +
-  facet_wrap(~tank) +
-  #scale_colour_manual(values = clrs)
-  scale_colour_brewer(palette = "Set1") +
-  guides(color=guide_legend("Days post exposure start")) +
-  theme(legend.position = "bottom") +
-  labs(caption = CAPTION) +
-  xlab(paste0("PC1 (", round(summary(PCA.swab)$cont$importance["Proportion Explained", "PC1"]*100, digits = 2), " %)")) +
-  ylab(paste0("PC2 (", round(summary(PCA.swab)$cont$importance["Proportion Explained", "PC2"]*100, digits = 2), " %)"))
-
 comp <- c(-2,7,14,21,28)
 comp <- expand.grid(TP1 = comp, TP2 = comp)
 comp <- comp[comp$TP1 != comp$TP2 & comp$TP1 < comp$TP2, ] %>%
@@ -1396,7 +1188,7 @@ x %>%
 
 ```
 
-# Figure 13
+# Figure 5
 ## ARGs
 ```{r}
 #RGI antibiotics stuff
@@ -1598,4 +1390,274 @@ ggplot(aes(x=treatment, y=sum.RPKM)) +
   ggh4x::facet_grid2(Drug.Class.Expand~sample.type, scales = "free", independent = "all") +
   theme_bw()
 ```
+```{r}
+Table 1
+AB <- read_csv("data/water.chemistry_sample.tubes.csv") %>%
+  mutate(across(.cols = everything(), ~str_replace(., "< MQL|< MDL|< IQL|< IDL|#N/A|No ISTD", "0"))) %>%
+  replace(is.na(.), "0")
+
+AB.colnames <- colnames(AB)[grepl("µg/L", colnames(AB))]
+
+AB[AB.colnames] <- sapply((AB[AB.colnames]), as.numeric)
+
+AB.filt <- AB %>%
+  select(Days.post.exposure.start, Tank, AB.concentration.group,
+         all_of(AB.colnames)) %>%
+  filter(AB.concentration.group != "Matrix QC") %>%
+  mutate(Days.post.exposure.start = as.numeric(Days.post.exposure.start)) %>%
+  pivot_longer(cols = all_of(AB.colnames),
+               names_to = "Antibiotic_Group", values_to = "Antibiotic_Concentration") %>%
+  separate(Antibiotic_Group, c("target.actual","target.antibiotic", NA), sep = "\\.") %>%
+  filter(target.antibiotic != "desethylene_ciprofloxacin", target.antibiotic != "desmethyl_clarithromycin") %>%
+  mutate(AB.concentration.group = if_else(AB.concentration.group == "high.dose", "High dose exposure", 
+                                          if_else(AB.concentration.group == "low.dose", "Low dose exposure", "Negative control")),
+         target.antibiotic = str_to_title(target.antibiotic))
+
+AB.filt %>%
+    mutate(Antibiotic_Concentration = replace_na(Antibiotic_Concentration, 0)) %>%
+  filter(Days.post.exposure.start %in% c(0.25, 1, 2, 7)) %>% # only take were chemistry was measured
+  group_by(AB.concentration.group, target.actual, target.antibiotic) %>%
+  summarise(meanAB.each = mean(Antibiotic_Concentration),
+            SD.AB.each = sd(Antibiotic_Concentration),
+            .groups = "drop_last") %>%
+  pivot_wider(names_from = target.actual, values_from = c(meanAB.each, SD.AB.each)) %>% 
+  write_csv("data/exposure_concentrations.csv")
+  
+  summarise(meanAB = mean(meanAB.each),
+            mean.SD.AB = mean(SD.AB.each),
+            .groups = "drop_last") %>%
+  pivot_wider(names_from = target.actual, values_from = c(meanAB, mean.SD.AB)) %>%
+  mutate(nominal = meanAB_actual/meanAB_target) %>%
+  ungroup(Days.post.exposure.start) %>%
+  summarise(meanNominal = mean(nominal),
+            meanSD = mean(mean.SD.AB_actual))
+```
+# Figure 6 and Supplementary figure 8
+```{r}
+humann <- read_tsv("data/all_sample_genefamilies.tsv") %>%
+  rename(Gene_Family = `# Gene Family`) %>%
+  mutate(pathway = str_extract(Gene_Family, "\\[[0-9].*[0-9]\\]") %>% gsub('^.|.$', '', .),
+         pathname = str_extract(Gene_Family, "\\(expasy\\).*\\[") %>% gsub("\\(expasy\\) |\\[$", "", .))
+
+humann.expand <- humann %>%
+  filter(!is.na(pathway)) %>%
+  group_by(pathway) %>% 
+  mutate(pathway_unique = strsplit(pathway, "; ")) %>% 
+  unnest(pathway_unique) %>% 
+  ungroup(pathway) %>% 
+  separate(pathway_unique, c("path1", "path2", "path3", "path4"), "\\.") %>%
+  mutate(path2 = paste0(path1, ".", path2),
+         path3 = paste0(path2, ".", path3),
+         path4 = paste0(path3, ".", path4))
+
+path4 <- humann.expand %>%
+  group_by(path4) %>%
+  summarise(across(where(is.double), sum)) %>%
+  rename_all(~str_remove_all(., ".ec_Abundance-CPM|Sample_")) %>%
+  column_to_rownames(var = "path4")
+
+path4.swab <- path4 %>%
+  select("1","2","3","4","10","11","12","17","18","19","20")
+
+path4.filt <- path4 %>%
+  select("5","6","7","8","13","14","15","16","21","22","23","24")
+
+metadata <- ARG %>% 
+  mutate(Sample = as.numeric(str_replace_all(Sample, "Sample_", "")),
+         sample.type = as.factor(sample.type)) %>%
+  arrange(Sample) %>%
+  mutate(Dosage = str_split_i(tank, "[A-Z]$", 1)) %>%
+  filter(!Sample == "9")
+
+matrix.swab <- t(path4.swab)[ order(as.numeric(row.names(t(path4.swab)))), ]
+matrix.filt <- t(path4.filt)[ order(as.numeric(row.names(t(path4.filt)))), ]
+
+nMDS.swab <- metaMDS(vegdist(matrix.swab), trymax = 1000)
+nMDS.filt <- metaMDS(vegdist(matrix.filt), trymax = 1000)
+
+swab <- data.frame(nMDS.swab$points) %>%
+  rownames_to_column(var = "Sample") %>%
+  mutate(Sample = as.numeric(Sample)) %>%
+  left_join(metadata, by = join_by(Sample))
+
+filt <- data.frame(nMDS.filt$points) %>%
+  rownames_to_column(var = "Sample") %>%
+  mutate(Sample = as.numeric(Sample)) %>%
+  left_join(metadata, by = join_by(Sample))
+
+adonis.swab <- pairwise.adonis2(vegdist(matrix.swab) ~ Dosage, data = filter(metadata, sample.type == "Swab"))
+
+adonis.filt <- pairwise.adonis2(vegdist(matrix.filt) ~ Dosage, data = filter(metadata, sample.type == "Filter"))
+
+adonis.filt$High_vs_Control$R2[1]
+adonis.filt$Low_vs_Control$R2[1]
+
+(swab.p <- ggplot(swab, aes(MDS1, MDS2)) +
+  geom_point(aes(colour = Dosage), size = 4) +
+  ggpubr::stat_chull(aes(fill = Dosage, color = Dosage), alpha = 0.1, geom = "polygon") +
+  scale_color_manual(values = clrs.tanks, aesthetics = c("colour", "fill")) +
+  facet_wrap(~sample.type) +
+  annotate(geom="label", 
+           label = paste("Pairwise PERMANOVA:\nControl vs Low dose R² = ",
+                         round(adonis.swab$Low_vs_Control$R2[1], 3),
+                         ", p = ", adonis.swab$Low_vs_Control$`Pr(>F)`[1], 
+                         "\nControl vs High dose R² = ",
+                         round(adonis.swab$High_vs_Control$R2[1], 3),
+                         ", p = ", adonis.swab$High_vs_Control$`Pr(>F)`[1],
+                         sep = ""), 
+           x=-Inf, y=Inf, hjust = 0, vjust = 1) +
+  guides(colour=guide_legend(title = "Treatment group"),
+         fill=guide_legend(title = "Treatment group")) +
+  theme_bw())
+
+(filt.p <- ggplot(filt, aes(MDS1, MDS2)) +
+  geom_point(aes(colour = Dosage), size = 4) +
+  ggpubr::stat_chull(aes(fill = Dosage, color = Dosage), alpha = 0.1, geom = "polygon") +
+  scale_color_manual(values = clrs.tanks, aesthetics = c("colour", "fill")) +
+  facet_wrap(~sample.type) +
+  annotate(geom="label", 
+           label = paste("Pairwise PERMANOVA:\nControl vs Low dose R² = ",
+                         round(adonis.filt$Low_vs_Control$R2[1], 3),
+                         ", p = ", adonis.filt$Low_vs_Control$`Pr(>F)`[1], 
+                         "\nControl vs High dose R² = ",
+                         round(adonis.filt$High_vs_Control$R2[1], 3),
+                         ", p = ", adonis.filt$High_vs_Control$`Pr(>F)`[1],
+                         sep = ""), 
+           x=-Inf, y=Inf, hjust = 0, vjust = 1) +
+  guides(colour=guide_legend(title = "Treatment group"),
+         fill=guide_legend(title = "Treatment group")) +
+  theme_bw())
+
+swab.p + filt.p +  patchwork::plot_annotation(tag_levels = 'A') +
+  plot_layout(guides = "collect")
+
+df <- t(path4.filt) %>%
+  as.data.frame() %>%
+  rownames_to_column(var = "Sample") %>%
+  tibble() %>%
+  mutate(Sample = as.double(Sample)) %>%
+  left_join(metadata, by = join_by(Sample))
+
+df.low.ctrl <- df %>%
+  filter(!Dosage == "High") %>%
+  column_to_rownames(var = "Sample") %>%
+  select(-tank, -Dosage, -sample.type) %>%
+  select(which(!colSums(., na.rm=TRUE) %in% 0)) %>%
+  rownames_to_column(var = "Sample") %>%
+  mutate(Sample = as.integer(Sample)) %>%
+  left_join(metadata, by = join_by("Sample"))
+
+df.low.ctrl.meta <- df.low.ctrl %>%
+  select(Sample, tank, Dosage)
+  
+collect <- data.frame()
+for (column in 2:(ncol(df.low.ctrl)-3)) {
+  tmp <- summary(lmerTest::lmer(df.low.ctrl[[column]] ~ Dosage + (1|tank), data = df.low.ctrl.meta, na.action = na.omit))
+  tmp2 <- data.frame(pathway = colnames(df.low.ctrl[column]), 
+                     p.value = as.data.frame(tmp$coefficients)$`Pr(>|t|)`[2])
+  collect <- rbind(collect, tmp2)
+}
+
+sig.pathways <- collect %>%
+  mutate(p.adj = p.adjust(p.value, method = "BH")) %>%
+  filter(p.adj < 0.05)
+
+key <- humann.expand %>%
+  select(path4, pathname) %>%
+  unique()
+
+(low.dose.p <- df.low.ctrl %>%
+  select(Sample, Dosage, tank, sig.pathways$pathway) %>%
+  pivot_longer(cols = c(-Sample, -Dosage, -tank), names_to = "pathway", values_to = "CPM") %>%
+  left_join(key, by = join_by(pathway == path4)) %>%
+  mutate(pathname = str_split_i(pathname, " $", 1),
+         combname = paste0(pathname, "\n", pathway)) %>%
+  mutate(Sample = as.factor(Sample)) %>%
+  ggplot(aes(x = CPM, y = combname)) +
+  geom_point(aes(colour = Dosage), size = 4) +
+  scale_colour_manual(values = clrs.tanks) +
+  ylab("MetaCyc Pathway") +
+  xlab("Copies per Million") +
+  guides(colour=guide_legend(title = "Treatment group")) +
+  labs(caption = "All differentially abundant pathways determined by linear mixed model 'lmer(CPM ~ treatment.group + (1|tank))' corrected for FDR, p < 0.05") +
+  theme_bw())
+
+### High
+
+df.high.ctrl <- df %>%
+  filter(!Dosage == "Low") %>%
+  column_to_rownames(var = "Sample") %>%
+  select(-tank, -Dosage, -sample.type) %>%
+  select(which(!colSums(., na.rm=TRUE) %in% 0)) %>%
+  rownames_to_column(var = "Sample") %>%
+  mutate(Sample = as.integer(Sample)) %>%
+  left_join(metadata, by = join_by("Sample"))
+
+df.high.ctrl.meta <- df.high.ctrl %>%
+  select(Sample, tank, Dosage)
+  
+collect.high <- data.frame()
+for (column in 2:(ncol(df.high.ctrl)-3)) {
+  tmp <- summary(lmerTest::lmer(df.high.ctrl[[column]] ~ Dosage + (1|tank), data = df.high.ctrl.meta, na.action = na.omit))
+  tmp2 <- data.frame(pathway = colnames(df.high.ctrl[column]), 
+                     p.value = as.data.frame(tmp$coefficients)$`Pr(>|t|)`[2])
+  collect.high <- rbind(collect.high, tmp2)
+}
+
+sig.pathways.high <- collect.high %>%
+  mutate(p.adj = p.adjust(p.value, method = "BH")) %>%
+  filter(p.adj < 0.05)
+
+key <- humann.expand %>%
+  select(path4, pathname) %>%
+  unique()
+
+(high.dose.p <- df.high.ctrl %>%
+  select(Sample, Dosage, tank, sig.pathways.high$pathway) %>%
+  pivot_longer(cols = c(-Sample, -Dosage, -tank), names_to = "pathway", values_to = "CPM") %>%
+  left_join(key, by = join_by(pathway == path4)) %>%
+  mutate(pathname = str_split_i(pathname, " $", 1),
+         combname = paste0(pathname, "\n", pathway)) %>%
+  mutate(Sample = as.factor(Sample)) %>%
+  ggplot(aes(x = CPM, y = combname)) +
+  geom_point(aes(colour = Dosage), size = 4) +
+  scale_colour_manual(values = clrs.tanks) +
+  ylab("MetaCyc Pathway") +
+  xlab("Copies per Million") +
+  guides(colour=guide_legend(title = "Treatment group")) +
+  labs(caption = "All differentially abundant pathways determined by linear mixed model 'lmer(CPM ~ treatment.group + (1|tank))' corrected for FDR, p < 0.05") +
+  theme_bw())
+
+### comb
+common.paths <- inner_join(sig.pathways, sig.pathways.high, by = join_by(pathway)) %>%
+  select(pathway)
+
+df %>%
+  filter(sample.type == "Filter") %>%
+  column_to_rownames(var = "Sample") %>%
+  t() %>%
+  as.data.frame() %>%
+  rownames_to_column(var = "pathway") %>%
+  filter(pathway %in% common.paths$pathway) %>%
+  column_to_rownames(var = "pathway") %>%
+  t() %>%
+  as.data.frame() %>%
+  rownames_to_column(var = "Sample") %>%
+  mutate(Sample = as.double(Sample)) %>%
+  left_join(metadata, by = join_by(Sample)) %>%
+  pivot_longer(cols = c(-Sample, -Dosage, -tank, -sample.type), names_to = "pathway", values_to = "CPM") %>%
+  left_join(key, by = join_by(pathway == path4)) %>%
+  mutate(pathname = str_split_i(pathname, " $", 1),
+         combname = paste0(pathname, "\n", pathway)) %>%
+  mutate(Sample = as.factor(Sample),
+         CPM = as.double(CPM),
+         Dosage = as.factor(Dosage)) %>%
+  ggplot(aes(x = CPM, y = combname)) +
+  geom_jitter(aes(colour = Dosage), size = 4, height = 0.1) +
+  scale_colour_manual(values = clrs.tanks) +
+  ylab("MetaCyc Pathway") +
+  xlab("Copies per Million") +
+  guides(colour=guide_legend(title = "Treatment group")) +
+  labs(caption = "All differentially abundant pathways determined by linear mixed model against the control \n'lmer(CPM ~ treatment.group + (1|tank))' corrected for FDR, p < 0.05") +
+  theme_bw()
 ```
