@@ -1,0 +1,51 @@
+---
+show-failed-logs: True
+keep-going: True
+ignore-incomplete: True
+printshellcmds: True
+keep-incomplete: True
+latency-wait: 60
+rerun-incomplete: True
+reason: True
+restart-times: 2
+
+# Cluster submission
+jobname: "{rule}.{jobid}"
+jobs: 100
+use-conda: True
+cluster-cancel: "scancel"
+cluster: "sbatch -A research_project-172179 --time={resources.runtime} --nodes=1 --cpus-per-task={threads} --partition={resources.partition} -o snakemake_execute.out --mem={resources.mem_gb}g --parsable"
+cluster-status: "./profile/status-sacct.sh"
+# Job resources
+set-resources:
+    - demultiplex:mem_gb=60
+    - EstimateErrorsFwd1:mem_gb=120
+    - EstimateErrorsRev1:mem_gb=120
+    - EstimateErrorsFwd2:mem_gb=120
+    - EstimateErrorsRev2:mem_gb=120
+    - EstimateErrorsFwd3:mem_gb=120
+    - EstimateErrorsRev3:mem_gb=120
+    - EstimateErrorsFwd4:mem_gb=120
+    - EstimateErrorsRev4:mem_gb=120
+    - dada2:mem_gb=120
+    - BuildTree:mem_gb=120
+    - AssignTaxonomy:mem_gb=120
+    
+# For some reasons time needs to be an integer without colons which is in minutes
+default-resources:
+    - partition=pq
+    - mem_gb=5
+    - runtime=5760
+set-threads:
+    - demultiplex=16
+    - EstimateErrorsFwd1=16
+    - EstimateErrorsRev1=16
+    - EstimateErrorsFwd2=16
+    - EstimateErrorsRev2=16
+    - EstimateErrorsFwd3=16
+    - EstimateErrorsRev3=16
+    - EstimateErrorsFwd4=16
+    - EstimateErrorsRev4=16
+    - dada2=16
+    - BuildTree=16
+    - AssignTaxonomy=16
