@@ -14,7 +14,7 @@ jobname: "{rule}.{jobid}"
 jobs: 100
 use-conda: True
 cluster-cancel: "scancel"
-cluster: "sbatch -A research_project-172179 --time={resources.runtime} --nodes=1 --cpus-per-task={threads} --partition={resources.partition} -o snakemake_execute.out --mem={resources.mem_gb}g --parsable"
+cluster: "sbatch -A research_project-XXXXXX --time={resources.runtime} --nodes=1 --cpus-per-task={threads} --partition={resources.partition} -o snakemake_execute.out --mem={resources.mem_gb}g --parsable"
 cluster-status: "./profile/status-sacct.sh"
 # Job resources
 set-resources:
